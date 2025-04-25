@@ -1,11 +1,14 @@
 import { configDotenv } from 'dotenv'
 import express from 'express'
 import connectToMongoDb from './config/db'
+import appointmentRoutes from './routes/appointmentRoutes'
+
 configDotenv()
 
 const app = express()
 
 app.use(express.json())
+app.use(appointmentRoutes)
 
 
 app.get("/", (req, res) => {
