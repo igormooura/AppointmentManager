@@ -1,21 +1,22 @@
-import { connectToRabbitMQ } from "../config/rabbitmq";
+import { connectToRabbitMQ } from "./rabbitmq";
 
 export const startConsumer = async () => {
     try {
         const { channel } = await connectToRabbitMQ();
-        const queue = 'appointments';
 
-        channel.consume(queue, (msg) => {
+        const notificationQueue = 'notifications';
+
+
+        channel.consume(notificationQueue, (msg) => {
             if (msg) {
-                const appointment = JSON.parse(msg.content.toString());
-                console.log('Novo agendamento recebido:', appointment);
+                const notification = JSON.parse(msg.content.toString());
+                console.log('Notificação recebida:', notification);
                 channel.ack(msg);
             }
         }, { noAck: false });
 
-        console.log('Consumer ativo e aguardando novas mensagens.');
+        console.log('Consumer ativo e aguardando mensagens.');
     } catch (error) {
         console.error("Erro ao iniciar o consumer:", error);
     }
 };
-
