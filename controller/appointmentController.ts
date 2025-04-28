@@ -21,3 +21,21 @@ export const createAppointment = async(req: Request, res: Response): Promise<voi
         res.status(500).json({message: "Error creating appointment"})
     }
 }
+
+export const getAppointment = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { appointmentId } = req.params; 
+
+        const response = await Appointment.findOne({ appointmentId });
+
+        if (!response) {
+            res.status(404).json({ message: "There's no appointment with this ID" });
+            return;
+        }
+
+        res.status(200).json({ appointment: response });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching appointment" });
+    }
+};
