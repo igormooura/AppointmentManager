@@ -39,3 +39,20 @@ export const getAppointment = async (req: Request, res: Response): Promise<void>
         res.status(500).json({ message: "Error fetching appointment" });
     }
 };
+
+export const deleteAppointment = async (req: Request, res: Response): Promise<void> => { 
+    try {
+        const {appointmentId} = req.params;
+
+        const deleteResponse = await Appointment.findOneAndDelete({appointmentId})
+        
+        if(!deleteResponse){
+            res.status(404).json({message: "There's no appointment or this appointment is already canceled"})
+        }
+
+        res.status(200).json({message: "Appointment deleted"})
+        
+    } catch (error){
+        console.error(error);
+    }
+}
