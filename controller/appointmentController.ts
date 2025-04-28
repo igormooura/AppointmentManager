@@ -56,3 +56,35 @@ export const deleteAppointment = async (req: Request, res: Response): Promise<vo
         console.error(error);
     }
 }
+
+export const updateAppointment = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { appointmentId } = req.params;
+        const { clientName, specialty, dateTime } = req.body;
+
+        if (!clientName && !specialty && !dateTime) {
+            res.status(400).json({ message: "At least one field (clientName, specialty, or dateTime) must be provided" });
+            return;
+        }
+
+        const appointment = await Appointment.findOne({ appointmentId });
+
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+
+        if (clientName) appointment.clientName = clientName;
+        if (specialty) appointment.specialty = specialty;
+        if (dateTime) appointment.dateTime = dateTime;
+
+        const updatedAppointment = await appointment.save();
+
+        res.status(200).json({ message: "Appointment updated", appointment: updatedAppointment });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error updating appointment" });
+    }
+};
