@@ -1,4 +1,4 @@
-import { createAppointment } from './../services/appointmentServices';
+import { cancelAppointment, createAppointment } from './../services/appointmentServices';
 import { Appointment } from './../model/appointment';
 import { Request, Response } from 'express';
 
@@ -37,22 +37,19 @@ export const getAppointment = async (req: Request, res: Response): Promise<void>
     }
 };
 
-export const deleteAppointment = async (req: Request, res: Response): Promise<void> => {
+export const deleteAppointmentController = async (req: Request, res: Response): Promise<void> => {
     try {
         const { _id } = req.params;
 
-        const deleteResponse = await Appointment.findOneAndDelete({ _id })
+        const deletedAppointment = await cancelAppointment(_id);
 
-        if (!deleteResponse) {
-            res.status(404).json({ message: "There's no appointment or this appointment is already canceled" })
-        }
-
-        res.status(200).json({ message: "Appointment deleted" })
+        res.status(200).json({ message: "Appointment deleted", appointment: deletedAppointment });
 
     } catch (error) {
         console.error(error);
+        res.status(500).json({ message: "Error deleting appointment" });
     }
-}
+};
 
 export const updateAppointment = async (req: Request, res: Response): Promise<void> => {
     try {

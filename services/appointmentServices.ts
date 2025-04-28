@@ -19,11 +19,12 @@ export const createAppointment = async (clientName: string, specialty: string, d
         console.log("chegou no rabbit")
 
         channel.sendToQueue(
-            'appointments',
+            'notifications',
             Buffer.from(JSON.stringify({
+                type: 'APPOINTMENT_SCHEDULED',
                 id: newAppointment._id,
                 clientName,
-                specialty, 
+                specialty,
                 dateTime
             })),
             { persistent: true }
@@ -33,4 +34,31 @@ export const createAppointment = async (clientName: string, specialty: string, d
     }
 
     return newAppointment;
+};
+
+export const cancelAppointment = async (_id: string) => {
+    const deletedAppointment = await Appointment.findOneAndDelete({ _id });
+
+    if (!deletedAppointment) {
+        throw new Error("There's no appointment or this appointment is already canceled");
+    }
+    console.log("passa1")
+    try {
+        const { channel } = await connectToRabbitMQ();
+        
+        channel.sendToQueue(
+            'notifications',
+            Buffer.from(JSON.stringify({
+                type: 'APPOINTMENT_CANCELLED',
+                message: `Your appointment on ${deletedAppointment.dateTime} was cancelled.`,
+                appointmentId: deletedAppointment._id,
+                clientName: deletedAppointment.clientName
+            })),
+            { persistent: true }
+        );
+        
+    } catch (error) {
+        console.error(error);
+    }
+    return deletedAppointment;
 };
