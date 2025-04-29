@@ -3,7 +3,6 @@ import {  createAppointmentController, deleteAppointmentController, getAppointme
 
 const router = express.Router();
 
-
 router.post("/createAppointment", createAppointmentController)
 router.get("/getAppointment/:_id", getAppointment);
 router.delete("/deleteAppointment/:_id", deleteAppointmentController);
