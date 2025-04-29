@@ -5,6 +5,7 @@ const AppointmentSchema = new Schema({
   specialty: { type: String, required: true }, 
   dateTime: { type: Date, required: true },
   status: { type: String, enum: ['SCHEDULED', 'CANCELLED', 'WAITING FOR ANSWER'], default:"WAITING FOR ANSWER" }, 
+  reminderSent: { type: Boolean, default: false }
 }, { timestamps: true });
 
 export const Appointment = mongoose.model('Appointment', AppointmentSchema);
