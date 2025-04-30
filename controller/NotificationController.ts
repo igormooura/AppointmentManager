@@ -24,3 +24,23 @@ export const handleIncomingNotification = async (req: Request, res: Response): P
     }
 };
 
+export const markNotificationAsRead = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+
+    try {
+        const notification = Notification.findByIdAndUpdate(
+                id,
+                { $set: { read: true } }, // determine read as true
+                { new: true } // return new 
+        )
+
+        if (!notification) {
+             res.status(404).json({ error: "Notification not found" });
+        }
+
+        res.json(notification);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to update notification" });
+    }
+};
+
