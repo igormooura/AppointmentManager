@@ -1,5 +1,6 @@
 import { configDotenv } from 'dotenv'
 import express from 'express'
+import cors from 'cors'
 import connectToMongoDb from './config/db'
 import appointmentRoutes from './routes/appointmentRoutes'
 import { startConsumer } from './config/startConsumer'
@@ -8,6 +9,7 @@ configDotenv()
 
 const app = express()
 
+app.use(cors());
 app.use(express.json())
 app.use(appointmentRoutes)
 
@@ -21,5 +23,6 @@ app.listen(3000, async() => {
     connectToMongoDb();
     startConsumer()
 })
+
 
 
