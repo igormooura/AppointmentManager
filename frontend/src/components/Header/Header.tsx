@@ -9,20 +9,18 @@ const Header = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center h-24 mx-auto px-4 shadow-md">
-        <h1 className="w-full text-3xl font-bold text-black">
-          Appointment Manager
-        </h1>
-        <ul className="hidden md:flex">
-          <li className="p-4">Home</li>
-          <li className="p-4">Contact Us</li>
-          <li className="p-4">About</li>
-        </ul>
+    <div className="flex justify-between items-center h-24 mx-auto px-4 ">
+      <h1 className="w-full text-3xl font-bold text-black">
+        Appointment Manager
+      </h1>
+      <ul className="hidden md:flex">
+        <li className="p-4">Home</li>
+        <li className="p-4">Contact Us</li>
+        <li className="p-4">About</li>
+      </ul>
 
-        <div onClick={handleClick} className="block md:hidden cursor-pointer">
-          {nav ? <TfiClose size={20} /> : <TfiAlignLeft size={20} />}
-        </div>
+      <div onClick={handleClick} className="block md:hidden cursor-pointer">
+        {nav ? <TfiClose size={20} /> : <TfiAlignLeft size={20} />}
       </div>
 
       <ul
