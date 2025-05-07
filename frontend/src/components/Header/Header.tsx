@@ -9,7 +9,7 @@ const Header = () => {
   };
 
   return (
-    <div className="flex justify-between items-center h-24 mx-auto px-4 ">
+    <div className="flex justify-between items-center h-24 mx-auto px-4 bg-[#FAF9F6]">
       <h1 className="w-full text-3xl font-bold text-black">
         Appointment Manager
       </h1>
