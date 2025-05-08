@@ -2,10 +2,21 @@ import React from "react";
 import { Calendar } from "@/components/ui/calendar";
 
 const AppointmentBox = () => {
+  const specialties = [
+    "Cardiology",
+    "Dermatology",
+    "Neurology",
+    "Pediatrics",
+    "Orthopedics",
+    "Psychiatry",
+    "Radiology",
+  ];
+
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [form, setForm] = React.useState({
     clientName: "",
     specialty: "",
+    dateTime: "",
   });
 
   const handleSubmit = () => {
@@ -37,20 +48,39 @@ const AppointmentBox = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Specialty
             </label>
-            <input
-              type="text"
+            <select
               value={form.specialty}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, specialty: e.target.value }))
               }
               className="w-full px-16 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            >
+              {specialties.map((spec) => (
+                <option key={spec} value={spec}>
+                  {spec}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
         <div className="hidden sm:block w-px bg-gray-300" />
 
         <div className="w-full sm:w-1/2 flex flex-col justify-center items-center space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Horário
+            </label>
+            <input
+              type="text"
+              value={form.dateTime}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, dateTime: e.target.value }))
+              }
+              className="w-full px-16 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
           <div className="flex justify-center">
             <Calendar
               mode="single"
@@ -58,6 +88,7 @@ const AppointmentBox = () => {
               onSelect={setDate}
               className="rounded-md border"
             />
+            
           </div>
           <button
             onClick={handleSubmit}
