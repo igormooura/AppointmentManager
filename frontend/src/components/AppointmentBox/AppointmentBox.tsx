@@ -1,6 +1,7 @@
+// AppointmentBox.tsx
 import { useState } from "react";
 import { motion } from "framer-motion";
-import DateBox from "./DateBox";  // Componente que você vai criar para o próximo formulário
+import DateBox from "./DateBox";
 
 const AppointmentBox = () => {
   const specialties = [
@@ -21,8 +22,11 @@ const AppointmentBox = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const handleSubmit = () => {
-    console.log(form);
-    setIsFormSubmitted(true);
+    if (form.clientName && form.specialty) {
+      setIsFormSubmitted(true);
+    } else {
+      alert("Please complete all fields.");
+    }
   };
 
   return (
@@ -73,7 +77,11 @@ const AppointmentBox = () => {
             </div>
           </div>
         ) : (
-          <DateBox onBack={() => setIsFormSubmitted(false)} />
+          <DateBox
+            clientName={form.clientName}
+            specialty={form.specialty}
+            onBack={() => setIsFormSubmitted(false)}
+          />
         )}
 
         {!isFormSubmitted && (

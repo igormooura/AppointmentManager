@@ -37,7 +37,8 @@ function Calendar({
   const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
 
   const handleDateClick = (day: number) => {
-    setSelectedDate(new Date(currentYear, currentMonth, day));
+    const newDate = new Date(currentYear, currentMonth, day);
+    setSelectedDate(newDate);
   };
 
   const handleMonthChange = (offset: number) => {
