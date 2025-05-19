@@ -1,7 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
 
 const AppointmentSchema = new Schema({
-  clientName: { type: String, required: true }, 
+  name: { type: String, required: true }, 
+  lastName: {type: String, required: true},
+  email: {type: String, required: true},
   specialty: { type: String, required: true }, 
   dateTime: { type: Date, required: true },
   status: { type: String, enum: ['SCHEDULED', 'CANCELLED']}, 
