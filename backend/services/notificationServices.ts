@@ -1,21 +1,19 @@
 import { Notification } from "../model/notification";
 
 export const handleNotification = async (notification: any) => {
-  const { type, message, appointmentId, name, lastName, specialty, dateTime } = notification;
+  const { type, message, name, lastName, specialty, dateTime } = notification;
 
   let finalMessage = "";
 
-  const fullName = `${name} ${lastName}`;
-
   switch (type) {
     case 'APPOINTMENT_SCHEDULED':
-      finalMessage = `${fullName}, your ${specialty} appointment has been scheduled for ${dateTime}.`;
+      finalMessage = `${name} ${lastName}, your ${specialty} appointment has been scheduled for ${dateTime}.`;
       break;
     case 'APPOINTMENT_CANCELLED':
-      finalMessage = `${fullName}, your appointment was cancelled: ${message}`;
+      finalMessage = `${name} ${lastName}, your appointment was cancelled: ${message}`;
       break;
     case 'APPOINTMENT_REMINDER':
-      finalMessage = `${fullName}, reminder: ${message}`;
+      finalMessage = `${name} ${lastName}, reminder: ${message}`;
       break;
     default:
       finalMessage = `Unknown notification type: ${type}`;
