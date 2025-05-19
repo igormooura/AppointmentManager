@@ -10,16 +10,13 @@ const AppointmentBox = () => {
   const [lastName, setLastName] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [email, setEmail] = useState("")
-
+  const [email, setEmail] = useState("");
 
   const specialtyOptions = [
     { value: "cardiology", label: "Cardiology" },
     { value: "dermatology", label: "Dermatology" },
     { value: "orthopedics", label: "Orthopedics" },
   ];
-
-  
 
   return (
     <div className="mx-auto flex justify-center items-center min-h-screen">
@@ -67,15 +64,18 @@ const AppointmentBox = () => {
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
             />
-            
 
-          <TimeSelector/>
-
-           
+            <TimeSelector />
           </div>
         </div>
 
-        <Schedule/>
+        <Schedule
+          name={name}
+          lastName={lastName}
+          email={email}
+          specialty={specialty}
+          selectedDate={selectedDate}
+        />
       </motion.div>
     </div>
   );

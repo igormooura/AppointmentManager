@@ -3,7 +3,7 @@ import { getNotificationsByClient, markNotificationAsRead, handleIncomingNotific
 
 const router = express.Router();
 
-router.get("/notifications/:clientName", getNotificationsByClient);
+router.get("/notifications", getNotificationsByClient);
 router.patch("/notifications/:id/read", markNotificationAsRead);
 router.post("/notifications", handleIncomingNotification); 
 
