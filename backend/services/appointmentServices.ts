@@ -21,8 +21,10 @@ export const createAppointment = async (
         email,
         specialty,
         dateTime,
-        status: 'SCHEDULED'
+        status: "PENDING",
     });
+
+    
 
     await newAppointment.save();
 
