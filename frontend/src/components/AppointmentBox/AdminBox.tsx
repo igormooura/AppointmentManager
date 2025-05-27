@@ -8,7 +8,7 @@ interface Appointment {
   lastName: string;
   email: string;
   specialty: string;
-  date: string;
+  dateTime: string;
   status: string;
 }
 
@@ -57,6 +57,7 @@ const AdminBox = () => {
               <th className="p-3 border-b">Email</th>
               <th className="p-3 border-b">Specialty</th>
               <th className="p-3 border-b">Date</th>
+              <th className="p-3 border-b">Time</th> 
               <th className="p-3 border-b">Status</th>
               <th className="p-3 border-b">Actions</th>
             </tr>
@@ -67,7 +68,15 @@ const AdminBox = () => {
                 <td className="p-3">{`${appt.name} ${appt.lastName}`}</td>
                 <td className="p-3">{appt.email}</td>
                 <td className="p-3">{appt.specialty}</td>
-                <td className="p-3">{new Date(appt.date).toLocaleDateString()}</td>
+                <td className="p-3">
+                  {new Date(appt.dateTime).toLocaleDateString("pt-BR")}
+                </td>
+                <td className="p-3">
+                  {new Date(appt.dateTime).toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </td>
                 <td className="p-3">{appt.status}</td>
                 <td className="p-3 space-x-2">
                   <button
