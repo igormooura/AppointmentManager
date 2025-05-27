@@ -40,6 +40,23 @@ export const getAppointment = async (req: Request, res: Response): Promise<void>
     }
 };
 
+export const getAllAppointments = async (req: Request, res: Response): Promise<void> => { 
+    try {
+
+        const response = await Appointment.find({});
+
+        console.log(response)
+
+        if(!response){ 
+            res.status(404).json({message: "No data!"})
+        }
+
+        res.status(200).json(response);
+    } catch (err){
+        console.log(err)
+    }
+}
+
 export const deleteAppointmentController = async (req: Request, res: Response): Promise<void> => {
     try {
         const { _id } = req.params;
@@ -57,9 +74,11 @@ export const deleteAppointmentController = async (req: Request, res: Response): 
 export const updateAppointment = async (req: Request, res: Response): Promise<void> => {
     try {
         const { _id } = req.params;
-        const { name, lastName, email, specialty, dateTime } = req.body;
+        const body = req.body || {}; // Evita undefined
 
-        if (!name && !lastName && !email && !specialty && !dateTime) {
+        const { name, lastName, email, specialty, dateTime, status } = body;
+
+        if (!name && !lastName && !email && !specialty && !dateTime && !status) {
             res.status(400).json({ message: "At least one field must be provided" });
             return;
         }
@@ -76,6 +95,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         if (email) appointment.email = email;
         if (specialty) appointment.specialty = specialty;
         if (dateTime) appointment.dateTime = dateTime;
+        if (status) appointment.status = status;
 
         const updatedAppointment = await appointment.save();
 
@@ -86,4 +106,5 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         res.status(500).json({ message: "Error updating appointment" });
     }
 };
+
 
