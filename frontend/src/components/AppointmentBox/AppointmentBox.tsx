@@ -3,7 +3,7 @@ import { useState } from "react";
 import Input from "../Inputs/Input";
 import Calendar from "../Calendar/Calendar";
 import Schedule from "../Buttons/Schedule";
-import TimeSelector from "../TimeAvaliable.tsx/TimeSelector";
+import TimeSelector from "../Timer/TimeSelector";
 
 const AppointmentBox = () => {
   const [name, setName] = useState("");
@@ -11,6 +11,7 @@ const AppointmentBox = () => {
   const [specialty, setSpecialty] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [email, setEmail] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
 
   const specialtyOptions = [
     { value: "cardiology", label: "Cardiology" },
@@ -65,7 +66,10 @@ const AppointmentBox = () => {
               setSelectedDate={setSelectedDate}
             />
 
-            <TimeSelector />
+            <TimeSelector
+              selectedTime={selectedTime}
+              setSelectedTime={setSelectedTime}
+            />
           </div>
         </div>
 
@@ -75,6 +79,7 @@ const AppointmentBox = () => {
           email={email}
           specialty={specialty}
           selectedDate={selectedDate}
+          selectedTime={selectedTime}
         />
       </motion.div>
     </div>

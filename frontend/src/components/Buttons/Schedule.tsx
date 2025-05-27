@@ -6,6 +6,7 @@ interface ScheduleProps {
   email: string;
   specialty: string;
   selectedDate: Date;
+  selectedTime: string;
 }
 
 const Schedule = ({
@@ -14,22 +15,30 @@ const Schedule = ({
   email,
   specialty,
   selectedDate,
+  selectedTime,
 }: ScheduleProps) => {
   const handleSchedule = async () => {
+    
+
+    
+    const fullDateTime = `${selectedDate.toISOString().split("T")[0]}T${selectedTime}:00`;
+
     const appointmentData = {
       name,
       lastName,
       email,
       specialty,
-      dateTime: selectedDate.toISOString().split("T")[0],
+      dateTime: fullDateTime,
     };
 
     try {
-      const response = await axios.post("http://localhost:3000/createAppointment", appointmentData);
-      console.log( response.data);
+      const response = await axios.post(
+        "http://localhost:3000/createAppointment",
+        appointmentData
+      );
+      console.log(response.data);
     } catch (error) {
       console.error(error);
-     
     }
   };
 

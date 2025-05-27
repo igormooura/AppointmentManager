@@ -20,7 +20,7 @@ export const createAppointment = async (
         lastName,
         email,
         specialty,
-        dateTime,
+        dateTime: new Date(dateTime),
         status: "PENDING",
     });
 
