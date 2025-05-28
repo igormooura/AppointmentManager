@@ -3,15 +3,16 @@ import { Notification } from "../model/notification";
 import { handleNotification } from "../services/notificationServices";
 
 export const getNotificationsByClient = async (req: Request, res: Response): Promise<void> => {
-    const { clientName } = req.params;
+  const { name, lastName } = req.query;
 
-    try {
-        const notifications = await Notification.find({ clientName }).sort({ createdAt: -1 });
-        res.json(notifications);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to fetch notifications" });
-    }
+  try {
+    const notifications = await Notification.find({ name, lastName }).sort({ createdAt: -1 });
+    res.json(notifications);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch notifications" });
+  }
 };
+
 
 export const handleIncomingNotification = async (req: Request, res: Response): Promise<void> => {
     const notification = req.body;  

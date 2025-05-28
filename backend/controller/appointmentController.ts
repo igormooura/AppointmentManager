@@ -4,20 +4,23 @@ import { Request, Response } from 'express';
 
 export const createAppointmentController = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { clientName, specialty, dateTime } = req.body
+        const { name, lastName, email, specialty, dateTime } = req.body;
 
-        if (!clientName || !specialty || !dateTime) {
-            res.status(400).json({ message: "All fields need to be completed" })
+        if (!name || !lastName || !email || !specialty || !dateTime) {
+            res.status(400).json({ message: "All fields (name, lastName, email, specialty, dateTime) must be completed" });
+            return;
         }
 
-        const newAppointment = await createAppointment(clientName, specialty, dateTime)
+        const newAppointment = await createAppointment(name, lastName, email, specialty, dateTime);
 
-        res.status(200).json({ message: "Appointment created ", appointment: newAppointment })
+        res.status(200).json({ message: "Appointment created", appointment: newAppointment });
 
     } catch (error) {
-        res.status(500).json({ message: "Error creating appointment" })
+        console.error(error);
+        res.status(500).json({ message: "Error creating appointment" });
     }
-}
+};
+
 
 export const getAppointment = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -37,6 +40,23 @@ export const getAppointment = async (req: Request, res: Response): Promise<void>
     }
 };
 
+export const getAllAppointments = async (req: Request, res: Response): Promise<void> => { 
+    try {
+
+        const response = await Appointment.find({});
+
+        console.log(response)
+
+        if(!response){ 
+            res.status(404).json({message: "No data!"})
+        }
+
+        res.status(200).json(response);
+    } catch (err){
+        console.log(err)
+    }
+}
+
 export const deleteAppointmentController = async (req: Request, res: Response): Promise<void> => {
     try {
         const { _id } = req.params;
@@ -54,10 +74,12 @@ export const deleteAppointmentController = async (req: Request, res: Response): 
 export const updateAppointment = async (req: Request, res: Response): Promise<void> => {
     try {
         const { _id } = req.params;
-        const { clientName, specialty, dateTime } = req.body;
+        const body = req.body || {}; // Evita undefined
 
-        if (!clientName && !specialty && !dateTime) {
-            res.status(400).json({ message: "At least one field (clientName, specialty, or dateTime) must be provided" });
+        const { name, lastName, email, specialty, dateTime, status } = body;
+
+        if (!name && !lastName && !email && !specialty && !dateTime && !status) {
+            res.status(400).json({ message: "At least one field must be provided" });
             return;
         }
 
@@ -68,10 +90,12 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
             return;
         }
 
-
-        if (clientName) appointment.clientName = clientName;
+        if (name) appointment.name = name;
+        if (lastName) appointment.lastName = lastName;
+        if (email) appointment.email = email;
         if (specialty) appointment.specialty = specialty;
         if (dateTime) appointment.dateTime = dateTime;
+        if (status) appointment.status = status;
 
         const updatedAppointment = await appointment.save();
 
@@ -82,3 +106,5 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         res.status(500).json({ message: "Error updating appointment" });
     }
 };
+
+
