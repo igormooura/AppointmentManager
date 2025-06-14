@@ -3,6 +3,7 @@ import amqp, { Channel } from "amqplib";
 let channel: Channel;
 
 export const connectToRabbitMQ = async (): Promise<void> => {
+  
   try {
     const connect = await amqp.connect("amqp://localhost");
     channel = await connect.createChannel();
@@ -12,4 +13,13 @@ export const connectToRabbitMQ = async (): Promise<void> => {
     console.error("RabbitMQ connection error:", error);
     process.exit(1);
   }
+};
+
+
+// function cuz the other one is a void
+export const getRabbitMQChannel = (): Channel => {
+    if (!channel) {
+        throw new Error("RabbitMQ channel not initialized");
+    }
+    return channel;
 };

@@ -12,13 +12,14 @@ export interface IAppointment extends Document {
     updatedAt?: Date;
 }
 
-export interface INotification extends Document {
-    appointmentId: string;
-    userEmail: string;
-    message: string;
-    status: "waiting for confirmation" | "confirmed" | "canceled";
-    createdAt: Date;
-    read: boolean;
+export interface INotification {
+  _id: string;
+  appointmentId: string;  
+  userEmail: string;
+  message: string;
+  status: "waiting for confirmation" | "confirmed" | "canceled";
+  read: boolean;
+  createdAt?: string;     
 }
 
 export interface AppointmentInput {
