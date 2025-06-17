@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createAppointment, updateAppointment } from "../services/appointmentService";
+import { createAppointment, getAllAppointments, updateAppointment } from "../services/appointmentService";
 
 
 export const createAppointmentController = async (req: Request, res: Response): Promise<void> => {
@@ -17,6 +17,16 @@ export const createAppointmentController = async (req: Request, res: Response): 
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error creating appointment" });
+    }
+};
+
+export const getAllAppointmentsController = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const appointments = await getAllAppointments();
+        res.status(200).json({ appointments });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching appointments" });
     }
 };
 
