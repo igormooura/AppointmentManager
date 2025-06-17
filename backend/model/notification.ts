@@ -1,36 +1,21 @@
 import mongoose, { Schema } from "mongoose";
 
-const NotificationSchema = new Schema(
-  {
-    name: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, required: true },
-    message: { type: String, required: true },
-    specialty: { type: String },
-    appointmentId: {
-      type: Schema.Types.ObjectId,
-      ref: "Appointment",
-      required: true,
-    },
-    dateTime: { type: Date },
-    type: {
-      type: String,
-      enum: [
-        "APPOINTMENT_SCHEDULED",
-        "APPOINTMENT_CANCELLED",
-        "APPOINTMENT_REMINDER",
-        "APPOINTMENT_PENDING",
-        "APPOINTMENT_REJECTED",
-        "APPOINTMENT_CONFIRMED",
-      ],
-      required: true,
-    },
-    read: { type: Boolean, default: false },
-    createdAt: { type: Date, default: Date.now },
+const NotificationSchema = new mongoose.Schema({
+  appointmentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Appointment",
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  userEmail: { type: String, required: true },
+  message: { type: String, required: true },
+  status: {
+    type: String,
+    enum: ["waiting for confirmation", "confirmed", "canceled"],
+    required: true,
+  },
+  createdAt: { type: Date, default: Date.now },
+  read: { type: Boolean, default: false },
+});
 
-export const Notification = mongoose.model("Notification", NotificationSchema);
+const Notification = mongoose.model("Notification", NotificationSchema);
+export default Notification;
