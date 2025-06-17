@@ -2,8 +2,6 @@ import { getRabbitMQChannel } from "../config/rabbitmq";
 import { IAppointment } from "../interfaces/interface";
 import Appointment from "../model/appointment_info";
 
-const channel = getRabbitMQChannel();
-
 export const createAppointment = async (
     name: string,
     lastName: string,
@@ -23,6 +21,8 @@ export const createAppointment = async (
     });
 
     const savedAppointment = await newAppointment.save();
+
+    const channel = getRabbitMQChannel();
     
     if (channel) {
         channel.sendToQueue(
@@ -32,6 +32,10 @@ export const createAppointment = async (
     }
 
     return savedAppointment;
+};
+
+export const getAllAppointments = async (): Promise<IAppointment[]> => {
+    return await Appointment.find();
 };
 
 export const updateAppointment = async (
@@ -60,6 +64,8 @@ export const updateAppointment = async (
         if (status) appointment.status = status;
 
         const updatedAppointment = await appointment.save();
+
+        const channel = getRabbitMQChannel();
 
         if (channel && (status || date || hour)) {
             channel.sendToQueue(
