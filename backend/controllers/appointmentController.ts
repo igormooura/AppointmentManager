@@ -23,7 +23,7 @@ export const createAppointmentController = async (req: Request, res: Response): 
 export const updateAppointmentController = async (req: Request, res: Response): Promise<void> => {
     try {
         const { _id } = req.params;
-        const body = req.body || {};
+        const body = req.body;
 
         const { name, lastName, email, specialty, date, hour, status } = body;
 
