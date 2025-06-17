@@ -4,8 +4,11 @@
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.1",
     "@types/socket.io": "^3.0.1",
+    "amqplib": "^0.10.8",
     "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "mongoose": "^8.15.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   },
   "name": "backend",
@@ -13,8 +16,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "ts-node-dev src/server.ts"
+    "start": "ts-node server.ts",
+    "dev": "ts-node-dev server.ts"
   },
   "author": "",
   "license": "ISC",
