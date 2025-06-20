@@ -5,6 +5,8 @@ import { createServer } from 'node:http';
 import connectToMongoDb from './config/connectToMongoDb';
 import { connectToRabbitMQ } from './config/rabbitmq';
 import router from './routes/routes';
+import { startRabbitMQReceiver } from './config/receiver';
+import { initSocket } from './config/socket';
 
 configDotenv();
 
@@ -20,6 +22,9 @@ async function startServer() {
   try {
     await connectToMongoDb();
     await connectToRabbitMQ();
+    await startRabbitMQReceiver();
+    await initSocket(server);
+
 
     server.listen(3000, () => {
       console.log("Server running on port 3000");
