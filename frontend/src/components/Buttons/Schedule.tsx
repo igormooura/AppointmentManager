@@ -33,7 +33,7 @@ const Schedule = ({
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/createAppointment",
+        "http://localhost:3000/appointments",
         appointmentData
       );
       console.log(response.data);
