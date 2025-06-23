@@ -17,7 +17,7 @@ const AdminBox = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/getAllAppointments")
+      .get("http://localhost:3000/appointments")
       .then((res) => {
         setAppointments(res.data);
         console.log("response:", res);
@@ -27,7 +27,7 @@ const AdminBox = () => {
 
   const updateStatus = async (_id: string, status: string) => {
     try {
-      await axios.put(`http://localhost:3000/updateAppointment/${_id}`, {
+      await axios.put(`http://localhost:3000/appointments/${_id}`, {
         status,
       });
 

@@ -8,6 +8,11 @@ const AppointmentSchema = new Schema(
     specialty: { type: String, required: true },
     date: { type: Date, required: true },
     hour: { type: String, required: true },
+    status: {
+        type: String,
+        enum: ["waiting for confirmation", "confirmed", "canceled"],
+        default: "waiting for confirmation"
+    }
   },
   { timestamps: true }
 );

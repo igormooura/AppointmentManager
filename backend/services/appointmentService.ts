@@ -14,7 +14,7 @@ export const createAppointment = async (
         name,
         lastName,
         email,
-        specialty, 
+        specialty,
         date,
         hour,
         status: "waiting for confirmation"
@@ -23,7 +23,7 @@ export const createAppointment = async (
     const savedAppointment = await newAppointment.save();
 
     const channel = getRabbitMQChannel();
-    
+
     if (channel) {
         channel.sendToQueue(
             "appointment.created",
@@ -49,7 +49,7 @@ export const updateAppointment = async (
     status?: "waiting for confirmation" | "confirmed" | "canceled"
 ): Promise<IAppointment> => {
     try {
-        const appointment = await Appointment.findOne({ _id }) as IAppointment | null;
+        const appointment = await Appointment.findOne({ _id });
 
         if (!appointment) {
             throw new Error("Appointment not found");
