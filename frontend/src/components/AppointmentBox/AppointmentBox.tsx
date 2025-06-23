@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import socket from "../../hook/socket";
 import Input from "../Inputs/Input";
 import Calendar from "../Calendar/Calendar";
 import Schedule from "../Buttons/Schedule";
@@ -12,6 +13,31 @@ const AppointmentBox = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [email, setEmail] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
+
+  useEffect(() => {
+    socket.on("appointment.pending", (data) => {
+      if (
+        data.name === name &&
+        data.lastName === lastName &&
+        data.email === email
+      ) {
+        alert("Sua consulta foi enviada e está aguardando confirmação.");
+      }
+    });
+
+    socket.on("appointment.updated", (data) => {
+      if (data.status === "confirmed") {
+        alert("Sua consulta foi confirmada!");
+      } else if (data.status === "canceled") {
+        alert("Sua consulta foi cancelada.");
+      }
+    });
+
+    return () => {
+      socket.off("appointment.pending");
+      socket.off("appointment.updated");
+    };
+  }, [name, lastName, email]);
 
   const specialtyOptions = [
     { value: "cardiology", label: "Cardiology" },
@@ -65,7 +91,6 @@ const AppointmentBox = () => {
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
             />
-
             <TimeSelector
               selectedTime={selectedTime}
               setSelectedTime={setSelectedTime}

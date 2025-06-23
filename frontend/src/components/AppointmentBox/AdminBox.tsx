@@ -19,8 +19,7 @@ const AdminBox = () => {
     axios
       .get("http://localhost:3000/appointments")
       .then((res) => {
-        setAppointments(res.data);
-        console.log("response:", res);
+        setAppointments(res.data.appointments);
       })
       .catch((err) => console.error("Error fetching appointments:", err));
   }, []);
@@ -32,9 +31,7 @@ const AdminBox = () => {
       });
 
       setAppointments((prev) =>
-        prev.map((appt) =>
-          appt._id === _id ? { ...appt, status } : appt
-        )
+        prev.map((appt) => (appt._id === _id ? { ...appt, status } : appt))
       );
     } catch (err) {
       console.error("Error updating status:", err);
@@ -49,7 +46,9 @@ const AdminBox = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Manage Appointments</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Manage Appointments
+        </h2>
         <table className="w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-100 text-left">
@@ -57,7 +56,7 @@ const AdminBox = () => {
               <th className="p-3 border-b">Email</th>
               <th className="p-3 border-b">Specialty</th>
               <th className="p-3 border-b">Date</th>
-              <th className="p-3 border-b">Time</th> 
+              <th className="p-3 border-b">Time</th>
               <th className="p-3 border-b">Status</th>
               <th className="p-3 border-b">Actions</th>
             </tr>
@@ -81,13 +80,13 @@ const AdminBox = () => {
                 <td className="p-3 space-x-2">
                   <button
                     className="px-3 py-1 bg-green-500 text-white rounded"
-                    onClick={() => updateStatus(appt._id, "Confirmed")}
+                    onClick={() => updateStatus(appt._id, "confirmed")}
                   >
                     Confirm
                   </button>
                   <button
                     className="px-3 py-1 bg-red-500 text-white rounded"
-                    onClick={() => updateStatus(appt._id, "Canceled")}
+                    onClick={() => updateStatus(appt._id, "canceled")}
                   >
                     Cancel
                   </button>
