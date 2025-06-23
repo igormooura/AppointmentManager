@@ -24,22 +24,10 @@ export const createAppointment = async (
   const savedAppointment = await newAppointment.save();
 
   const channel = getRabbitMQChannel();
-  if (channel) {
-    channel.sendToQueue(
-      "appointment.created",
-      Buffer.from(JSON.stringify(savedAppointment))
-    );
-  }
-
-  const io = getIO();
-  io.emit("appointment.pending", {
-    _id: savedAppointment._id,
-    name: savedAppointment.name,
-    lastName: savedAppointment.lastName,
-    email: savedAppointment.email,
-    specialty: savedAppointment.specialty,
-    status: savedAppointment.status
-  });
+  channel.sendToQueue(
+    "appointment.created",
+    Buffer.from(JSON.stringify(savedAppointment))
+  );
 
   return savedAppointment;
 };
@@ -54,42 +42,30 @@ export const updateAppointment = async (
   hour?: string,
   status?: "waiting for confirmation" | "confirmed" | "canceled"
 ): Promise<IAppointment> => {
-  try {
-    const appointment = await Appointment.findOne({ _id });
-    if (!appointment) {
-      throw new Error("Appointment not found");
-    }
+  const appointment = await Appointment.findOne({ _id });
+  if (!appointment) throw new Error("Appointment not found");
 
-    if (name) appointment.name = name;
-    if (lastName) appointment.lastName = lastName;
-    if (email) appointment.email = email;
-    if (specialty) appointment.specialty = specialty;
-    if (date) appointment.date = date;
-    if (hour) appointment.hour = hour;
-    if (status) appointment.status = status;
+  if (name) appointment.name = name;
+  if (lastName) appointment.lastName = lastName;
+  if (email) appointment.email = email;
+  if (specialty) appointment.specialty = specialty;
+  if (date) appointment.date = date;
+  if (hour) appointment.hour = hour;
+  if (status) appointment.status = status;
 
-    const updatedAppointment = await appointment.save();
+  const updatedAppointment = await appointment.save();
 
+  if (status || date || hour) {
     const channel = getRabbitMQChannel();
-    if (channel && (status || date || hour)) {
-      channel.sendToQueue(
-        "appointment.status.updated",
-        Buffer.from(JSON.stringify(updatedAppointment))
-      );
-    }
-
-    const io = getIO();
-    io.emit("appointment.updated", {
-      _id: updatedAppointment._id,
-      status: updatedAppointment.status
-    });
-
-    return updatedAppointment;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error updating appointment");
+    channel.sendToQueue(
+      "appointment.status.updated",
+      Buffer.from(JSON.stringify(updatedAppointment))
+    );
   }
+
+  return updatedAppointment;
 };
+
 
 export const getAllAppointments = async (): Promise<IAppointment[]> => {
   return await Appointment.find();

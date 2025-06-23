@@ -1,8 +1,9 @@
 import { Channel, ConsumeMessage } from "amqplib";
 import { getRabbitMQChannel } from "./rabbitmq";
 import { createNotification } from "../services/notificationService";
+import { getIO } from "./socket";
 
-const processMessage = async ( channel: Channel, msg: ConsumeMessage, type: "created" | "status.updated") => {
+const processMessage = async (channel: Channel, msg: ConsumeMessage, type: "created" | "status.updated") => {
   try {
     const data = JSON.parse(msg.content.toString());
 
@@ -20,6 +21,24 @@ const processMessage = async ( channel: Channel, msg: ConsumeMessage, type: "cre
     };
 
     await createNotification(appointment as any);
+
+    const io = getIO();
+    if (type === "created") {
+      io.emit("appointment.pending", {
+        _id: appointment._id,
+        name: appointment.name,
+        lastName: appointment.lastName,
+        email: appointment.email,
+        specialty: appointment.specialty,
+        status: appointment.status,
+      });
+    } else if (type === "status.updated") {
+      io.emit("appointment.updated", {
+        _id: appointment._id,
+        status: appointment.status,
+      });
+    }
+
     console.log(`Notification created for ${appointment._id} (${type})`);
 
     channel.ack(msg);
