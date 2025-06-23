@@ -40,8 +40,8 @@ export const updateAppointment = async (
   specialty?: string,
   date?: Date,
   hour?: string,
-  status?: "waiting for confirmation" | "confirmed" | "canceled"
-): Promise<IAppointment> => {
+  status?: "waiting for confirmation" | "confirmed" | "canceled" ): Promise<IAppointment> => {
+  
   const appointment = await Appointment.findOne({ _id });
   if (!appointment) throw new Error("Appointment not found");
 

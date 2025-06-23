@@ -37,8 +37,8 @@ export const updateAppointmentController = async (req: Request, res: Response): 
 
         const { name, lastName, email, specialty, date, hour, status } = body;
 
-        if (!name && !lastName && !email && !specialty && !date && !hour && !status) {
-            res.status(400).json({ message: "At least one field must be provided" });
+        if (!name || !lastName || !email || !specialty || !date || !hour || !status) {
+            res.status(400).json({ message: "Missing required appointment fields" });
             return;
         }
 
