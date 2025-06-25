@@ -9,7 +9,8 @@ interface Appointment {
   lastName: string;
   email: string;
   specialty: string;
-  dateTime: string;
+  date: string;
+  hour: string;
   status: "pending" | "confirmed" | "canceled";
 }
 
@@ -84,13 +85,17 @@ const AdminBox = () => {
     }
   };
 
-  const formatDateTime = (dateTime: string) => {
-    const date = new Date(dateTime);
-    return {
-      date: date.toLocaleDateString("pt-BR"),
-      time: date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
-    };
+  const formatDateTime = (dateStr: string, hourStr: string) => {
+  const [hours, minutes] = hourStr.split(":").map(Number);
+  const date = new Date(dateStr);
+  date.setHours(hours, minutes, 0, 0);
+
+  return {
+    date: date.toLocaleDateString("pt-BR"),
+    time: date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
   };
+};
+
 
   return (
     <div className="mx-auto flex justify-center items-start min-h-screen py-8">
@@ -139,7 +144,7 @@ const AdminBox = () => {
               </thead>
               <tbody>
                 {appointments.map((appt) => {
-                  const { date, time } = formatDateTime(appt.dateTime);
+                  const { date, time } = formatDateTime(appt.date, appt.hour);
                   const isUpdating = loading.updateId === appt._id;
                   
                   return (
