@@ -8,7 +8,7 @@ export const createNotificationController = async (req: Request, res: Response):
         const appointment: IAppointment = req.body;
 
         if (!appointment._id || !appointment.email || !appointment.status || !appointment.date || !appointment.hour) {
-            res.status(400).json({ error: "Missing required appointment fields" });
+            res.status(400).json({ error: "Missing required appointment fields1" });
             return;
         }
 

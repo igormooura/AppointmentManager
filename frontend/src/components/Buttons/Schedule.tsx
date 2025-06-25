@@ -18,17 +18,17 @@ const Schedule = ({
   selectedTime,
 }: ScheduleProps) => {
   const handleSchedule = async () => {
-    
-
-    
-    const fullDateTime = `${selectedDate.toISOString().split("T")[0]}T${selectedTime}:00`;
+    const fullDateTime = `${
+      selectedDate.toISOString().split("T")[0]
+    }T${selectedTime}:00`;
 
     const appointmentData = {
       name,
       lastName,
       email,
       specialty,
-      dateTime: fullDateTime,
+      date: new Date(fullDateTime), 
+      hour: selectedTime
     };
 
     try {
