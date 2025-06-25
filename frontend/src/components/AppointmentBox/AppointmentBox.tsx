@@ -21,13 +21,19 @@ const AppointmentBox = () => {
   const [selectedTime, setSelectedTime] = useState("");
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
-  const addNotification = (status: "pending" | "confirmed" | "canceled", message: string) => {
+  useEffect(() => {
+    if (email) {
+      socket.emit("joinRoom", email);
+    }
+  }, [email]);
+
+  const addNotification = (
+    status: "pending" | "confirmed" | "canceled",
+    message: string
+  ) => {
     const id = Date.now();
     setNotifications((prev) => [...prev, { id, status, message }]);
-
-    setTimeout(() => {
-      removeNotification(id);
-    }, 10000);
+    setTimeout(() => removeNotification(id), 10000);
   };
 
   const removeNotification = (id: number) => {
@@ -41,7 +47,10 @@ const AppointmentBox = () => {
         data.lastName === lastName &&
         data.email === email
       ) {
-        addNotification("pending", "Sua consulta foi enviada e está aguardando confirmação.");
+        addNotification(
+          "pending",
+          "Sua consulta foi enviada e está aguardando confirmação."
+        );
       }
     });
 
@@ -81,7 +90,6 @@ const AppointmentBox = () => {
         setIsVisible(false);
         onClose();
       }, 5000);
-
       return () => clearTimeout(timer);
     }, [onClose]);
 
@@ -113,7 +121,6 @@ const AppointmentBox = () => {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
@@ -130,7 +137,6 @@ const AppointmentBox = () => {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
@@ -171,7 +177,6 @@ const AppointmentBox = () => {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <path
               strokeLinecap="round"
@@ -187,7 +192,7 @@ const AppointmentBox = () => {
 
   return (
     <div className="relative min-h-screen flex justify-center items-center">
-      {/* Container de notificações com posição fixa e z-index alto */}
+      {/* Container de notificações */}
       <div className="fixed bottom-4 right-4 z-50 space-y-2">
         {notifications.map((notification) => (
           <Notification

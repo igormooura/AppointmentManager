@@ -24,7 +24,7 @@ const processMessage = async (channel: Channel, msg: ConsumeMessage, type: "crea
 
     const io = getIO();
     if (type === "created") {
-      io.emit("appointment.pending", {
+      io.to(appointment.email).emit("appointment.pending", {
         _id: appointment._id,
         name: appointment.name,
         lastName: appointment.lastName,
@@ -33,7 +33,7 @@ const processMessage = async (channel: Channel, msg: ConsumeMessage, type: "crea
         status: appointment.status,
       });
     } else if (type === "status.updated") {
-      io.emit("appointment.updated", {
+      io.to(appointment.email).emit("appointment.updated", {
         _id: appointment._id,
         status: appointment.status,
       });
