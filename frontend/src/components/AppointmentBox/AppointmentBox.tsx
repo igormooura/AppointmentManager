@@ -249,6 +249,7 @@ const AppointmentBox = () => {
               setSelectedDate={setSelectedDate}
             />
             <TimeSelector
+              selectedDate={selectedDate}
               selectedTime={selectedTime}
               setSelectedTime={setSelectedTime}
             />
