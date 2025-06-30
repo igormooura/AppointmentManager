@@ -9,9 +9,9 @@ import { createNotificationController } from "../controllers/notificationControl
 
 const router = Router();
 
-router.post("/appointments", createAppointmentController);
-router.get("/appointments", getAllAppointmentsController);
-router.put("/appointments/:_id", updateAppointmentController);
+router.post("/create-appointment", createAppointmentController);
+router.get("/all-appointments", getAllAppointmentsController);
+router.put("/update-appointment/:_id", updateAppointmentController);
 
 router.post("/notifications", createNotificationController);
 

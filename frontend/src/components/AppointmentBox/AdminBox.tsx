@@ -25,7 +25,7 @@ const AdminBox = () => {
       setLoading(prev => ({ ...prev, fetch: true }));
       setError("");
       try {
-        const res = await axios.get("http://localhost:3000/appointments");
+        const res = await axios.get("http://localhost:3000/all-appointments");
         setAppointments(res.data.appointments);
       } catch (err) {
         setError("Failed to load appointments. Please try again.");
@@ -64,7 +64,7 @@ const AdminBox = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/appointments/${encodeURIComponent(_id)}`,
+        `http://localhost:3000/update-appointment/${encodeURIComponent(_id)}`,
         { status },
         {
           headers: { "Content-Type": "application/json" },
