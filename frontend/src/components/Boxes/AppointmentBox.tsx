@@ -7,6 +7,7 @@ import Schedule from "../Buttons/Schedule";
 import TimeSelector from "../Timer/TimeSelector";
 import Notification from "../Notification/Notification";
 import { NotificationType } from "@/types/appointment";
+import { Divisor } from "../Divisor/Divisor";
 
 const AppointmentBox = () => {
   const [name, setName] = useState("");
@@ -120,7 +121,7 @@ const AppointmentBox = () => {
             </div>
           </div>
 
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-[60%] w-px bg-gray-300" />
+          <Divisor/>
 
           <div className="w-1/2 pl-8 flex flex-col justify-center items-center">
             <Calendar
