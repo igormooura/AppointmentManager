@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createAppointment, getAllAppointments, updateAppointment } from "../services/appointmentService";
+import { createAppointment, getAllAppointments, getAppointmentByUser, updateAppointment } from "../services/appointmentService";
 
 
 export const createAppointmentController = async (req: Request, res: Response): Promise<void> => {
@@ -54,4 +54,26 @@ export const updateAppointmentController = async (req: Request, res: Response): 
         console.error(error);
         res.status(500).json({ message: "Error updating appointment" });
     }
+};
+
+export const getAppointmentByUserController = async (
+  req: Request<{ email: string }>,
+  res: Response
+): Promise<void> => {
+  try {
+    const { email } = req.params;
+    const appointments = await getAppointmentByUser(email);
+    res.status(200).json(appointments);
+  } catch (error: unknown) {
+    console.error("Error getting appointment by user:", error);
+    if (error instanceof Error) {
+      if (error.message === "No appointments found for this user.") {
+        res.status(404).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: error.message });
+      }
+    } else {
+      res.status(500).json({ message: "Unknown server error" });
+    }
+  }
 };

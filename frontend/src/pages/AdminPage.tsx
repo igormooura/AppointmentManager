@@ -1,4 +1,4 @@
-import AdminBox from "@/components/AppointmentBox/AdminBox"
+import AdminBox from "@/components/Boxes/AdminBox"
 import Background from "@/components/Background/Background"
 import Header from "@/components/Header/Header"
 
