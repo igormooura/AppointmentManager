@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import socket from "../../hook/socket";
 import Input from "../Inputs/Input";
 import Calendar from "../Calendar/Calendar";
@@ -24,18 +24,18 @@ const AppointmentBox = () => {
     }
   }, [email]);
 
-  const addNotification = (
-    status: "pending" | "confirmed" | "canceled",
-    message: string
-  ) => {
-    const id = Date.now();
-    setNotifications((prev) => [...prev, { id, status, message }]);
-    setTimeout(() => removeNotification(id), 10000);
-  };
-
   const removeNotification = (id: number) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
+
+  const addNotification = useCallback(
+    (status: "pending" | "confirmed" | "canceled", message: string) => {
+      const id = Date.now();
+      setNotifications((prev) => [...prev, { id, status, message }]);
+      setTimeout(() => removeNotification(id), 10000);
+    },
+    []
+  );
 
   useEffect(() => {
     socket.on("appointment.pending", (data) => {
@@ -44,18 +44,15 @@ const AppointmentBox = () => {
         data.lastName === lastName &&
         data.email === email
       ) {
-        addNotification(
-          "pending",
-          "Sua consulta foi enviada e está aguardando confirmação."
-        );
+        addNotification("pending", "Your appointment is pending confirmation.");
       }
     });
 
     socket.on("appointment.updated", (data) => {
       if (data.status === "confirmed") {
-        addNotification("confirmed", "Sua consulta foi confirmada!");
+        addNotification("confirmed", "Your appointment is confirmed!");
       } else if (data.status === "canceled") {
-        addNotification("canceled", "Sua consulta foi cancelada.");
+        addNotification("canceled", "Your appointment was canceled.");
       }
     });
 
@@ -63,7 +60,7 @@ const AppointmentBox = () => {
       socket.off("appointment.pending");
       socket.off("appointment.updated");
     };
-  }, [name, lastName, email]);
+  }, [name, lastName, email, addNotification]);
 
   const specialtyOptions = [
     { value: "cardiology", label: "Cardiology" },
@@ -121,7 +118,7 @@ const AppointmentBox = () => {
             </div>
           </div>
 
-          <Divisor/>
+          <Divisor />
 
           <div className="w-1/2 pl-8 flex flex-col justify-center items-center">
             <Calendar
