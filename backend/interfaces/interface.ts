@@ -22,3 +22,10 @@ export interface INotification {
   read: boolean;
   createdAt?: string;     
 }
+
+export interface ICode {
+  email: string;
+  code: number;
+  createdAt: Date;
+  expiresAt: Date;
+}
