@@ -71,10 +71,10 @@ export const getAllAppointments = async (): Promise<IAppointment[]> => {
 };
 
 export const getAppointmentByUser = async (
-  _id: string
+  email: string
 ): Promise<IAppointment[]> => {
   try {
-    const appointments = await Appointment.find({ _id });
+    const appointments = await Appointment.find({ email });
     if (!appointments.length) {
       throw new Error("No appointments found for this user.");
     }
