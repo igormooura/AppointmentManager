@@ -18,7 +18,7 @@ export const createAppointment = async (
     specialty,
     date,
     hour,
-    status: "waiting for confirmation"
+    status: "waiting for confirmation",
   });
 
   const savedAppointment = await newAppointment.save();
@@ -40,8 +40,8 @@ export const updateAppointment = async (
   specialty?: string,
   date?: Date,
   hour?: string,
-  status?: "waiting for confirmation" | "confirmed" | "canceled" ): Promise<IAppointment> => {
-  
+  status?: "waiting for confirmation" | "confirmed" | "canceled"
+): Promise<IAppointment> => {
   const appointment = await Appointment.findOne({ _id });
   if (!appointment) throw new Error("Appointment not found");
 
@@ -66,7 +66,23 @@ export const updateAppointment = async (
   return updatedAppointment;
 };
 
-
 export const getAllAppointments = async (): Promise<IAppointment[]> => {
   return await Appointment.find();
+};
+
+export const getAppointmentByUser = async (
+  _id: string
+): Promise<IAppointment[]> => {
+  try {
+    const appointments = await Appointment.find({ _id });
+    if (!appointments.length) {
+      throw new Error("No appointments found for this user.");
+    }
+    return appointments;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to get user appointment: ${error.message}`);
+    }
+    throw new Error("Unknown error occurred while fetching appointments.");
+  }
 };
