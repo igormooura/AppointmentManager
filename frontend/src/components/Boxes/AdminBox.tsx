@@ -155,6 +155,7 @@ const AdminBox = () => {
             loading={loading}
             updateStatus={updateStatus}
             formatDateTime={formatDateTime}
+            showActions={true}
           />
         )}
       </motion.div>

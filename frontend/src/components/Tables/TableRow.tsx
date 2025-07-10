@@ -7,9 +7,10 @@ interface TableRowProps {
   loadingId: string;
   onUpdateStatus: (id: string, status: "confirmed" | "canceled") => void;
   formatDateTime: (dateStr: string, hourStr: string) => { date: string; time: string };
+  showActions?: boolean;
 }
 
-export const TableRow = ({ appt, loadingId, onUpdateStatus, formatDateTime }: TableRowProps) => {
+export const TableRow = ({ appt, loadingId, onUpdateStatus, formatDateTime, showActions = true, }: TableRowProps) => {
   const { date, time } = formatDateTime(appt.date, appt.hour);
   const isUpdating = loadingId === appt._id;
 
@@ -28,12 +29,14 @@ export const TableRow = ({ appt, loadingId, onUpdateStatus, formatDateTime }: Ta
         <StatusBadge status={appt.status} />
       </td>
       <td className="p-3 space-x-2">
-        <ActionButtons 
-          status={appt.status}
-          isUpdating={isUpdating}
-          onConfirm={() => onUpdateStatus(appt._id, "confirmed")}
-          onCancel={() => onUpdateStatus(appt._id, "canceled")}
-        />
+        {showActions && (
+          <ActionButtons 
+            status={appt.status}
+            isUpdating={isUpdating}
+            onConfirm={() => onUpdateStatus(appt._id, "confirmed")}
+            onCancel={() => onUpdateStatus(appt._id, "canceled")}
+          />
+        )}
       </td>
     </tr>
   );
