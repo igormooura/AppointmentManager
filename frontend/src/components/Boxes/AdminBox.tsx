@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import socket from "../../hook/socket";
@@ -11,16 +11,26 @@ const AdminBox = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const setSuccessWithTimeout = useCallback((message: string) => {
+    setSuccess(message);
+    setTimeout(() => setSuccess(""), 3000);
+  }, []);
+
   useEffect(() => {
     const fetchAppointments = async () => {
       setLoading((prev) => ({ ...prev, fetch: true }));
       setError("");
+
       try {
         const res = await axios.get("http://localhost:3000/all-appointments");
         setAppointments(res.data.appointments);
-      } catch (err) {
-        setError("Failed to load appointments. Please try again.");
-        console.error("Fetch error:", err);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+          console.error("Fetch error:", err.message);
+        } else {
+          setError("Unknown error occurred while fetching appointments.");
+        }
       } finally {
         setLoading((prev) => ({ ...prev, fetch: false }));
       }
@@ -28,25 +38,26 @@ const AdminBox = () => {
 
     fetchAppointments();
 
-    socket.on("appointment.updated", (updatedAppt: Appointment) => {
+    const onUpdated = (updatedAppt: Appointment) => {
       setAppointments((prev) =>
         prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
       );
-      setSuccess(`Appointment ${updatedAppt.status}`);
-      setTimeout(() => setSuccess(""), 3000);
-    });
+      setSuccessWithTimeout(`Appointment ${updatedAppt.status}`);
+    };
 
-    socket.on("appointment.created", (newAppt: Appointment) => {
+    const onCreated = (newAppt: Appointment) => {
       setAppointments((prev) => [...prev, newAppt]);
-      setSuccess("New appointment added!");
-      setTimeout(() => setSuccess(""), 3000);
-    });
+      setSuccessWithTimeout("New appointment added!");
+    };
+
+    socket.on("appointment.updated", onUpdated);
+    socket.on("appointment.created", onCreated);
 
     return () => {
-      socket.off("appointment.updated");
-      socket.off("appointment.created");
+      socket.off("appointment.updated", onUpdated);
+      socket.off("appointment.created", onCreated);
     };
-  }, []);
+  }, [setSuccessWithTimeout]);
 
   const updateStatus = async (
     _id: string,
@@ -61,6 +72,7 @@ const AdminBox = () => {
     setError("");
     setSuccess("");
 
+    // Otimistic update
     setAppointments((prev) =>
       prev.map((appt) => (appt._id === _id ? { ...appt, status } : appt))
     );
@@ -76,18 +88,23 @@ const AdminBox = () => {
       );
 
       if (res.status !== 200) {
-        throw new Error(res.data.message || "Update failed");
+        throw new Error(res.data?.message || "Update failed");
       }
 
       socket.emit("admin.update", { _id, status });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setAppointments((prev) =>
         prev.map((appt) =>
           appt._id === _id ? { ...appt, status: "pending" } : appt
         )
       );
-      setError(err.response?.data?.message || err.message);
-      console.error("Update error:", err);
+
+      if (err instanceof Error) {
+        setError(err.message);
+        console.error("Update error:", err.message);
+      } else {
+        setError("Unknown error occurred while updating appointment.");
+      }
     } finally {
       setLoading((prev) => ({ ...prev, updateId: "" }));
     }
@@ -106,16 +123,16 @@ const AdminBox = () => {
     };
   };
 
-  const isAppointmentWithinLast3Days = (dateStr: string) => {
+  const isRecent = (dateStr: string) => {
     const apptDate = new Date(dateStr);
     const today = new Date();
-    const fiveDaysAgo = new Date();
-    fiveDaysAgo.setDate(today.getDate() - 3);
-    return apptDate >= fiveDaysAgo;
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(today.getDate() - 3);
+    return apptDate >= threeDaysAgo;
   };
 
   const filteredAppointments = appointments.filter((appt) =>
-    isAppointmentWithinLast3Days(appt.date)
+    isRecent(appt.date)
   );
 
   return (
@@ -135,6 +152,7 @@ const AdminBox = () => {
             {error}
           </div>
         )}
+
         {success && (
           <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg">
             {success}
