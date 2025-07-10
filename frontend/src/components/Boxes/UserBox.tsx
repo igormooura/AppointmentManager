@@ -1,21 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Appointment } from "@/types/appointment";
 import { AppointmentTable } from "../Tables/AppointmentTable";
+import axios from "axios";
 
-const UserBox = () => {
-  const [appointments] = useState<Appointment[]>([
-    {
-      _id: "1",
-      name: "Igor",
-      lastName: "Modawdawura",
-      email: "igor@example.com",
-      specialty: "Cardiology",
-      date: "2025-07-15",
-      hour: "14:00",
-      status: "pending",
-    },
-  ]);
+interface UserBoxProps {
+  email: string;
+}
+
+const UserBox = ({ email }: UserBoxProps) => {
+  const [appointmentByUser, setAppointmentByUser] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState({ fetch: false, updateId: "" });
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchAppointment = async () => {
+      if (!email) return;
+      setLoading((prev) => ({ ...prev, fetch: true }));
+      setError("");
+      try {
+        const response = await axios.get<Appointment[]>(`http://localhost:3000/appointment/${email}`);
+        setAppointmentByUser(response.data);
+      } catch (error: unknown) {
+        if(error instanceof Error){ 
+          setError(error.message);
+          console.error("Fetch error:", error.message);
+        }
+      } finally {
+        setLoading((prev) => ({ ...prev, fetch: false }));
+      }
+    };
+    fetchAppointment();
+  }, [email]);
 
   const formatDateTime = (dateStr: string, hourStr: string) => {
     const [hours, minutes] = hourStr.split(":").map(Number);
@@ -42,14 +58,18 @@ const UserBox = () => {
           Your Appointments
         </h2>
 
-        {appointments.length === 0 ? (
-          <div className="text-center p-8 text-gray-500">
-            No appointments found
-          </div>
-        ) : (
+        {loading.fetch && <div className="text-center text-gray-500">Loading...</div>}
+
+        {error && <div className="text-center text-red-500">{error}</div>}
+
+        {!loading.fetch && !error && appointmentByUser.length === 0 && (
+          <div className="text-center p-8 text-gray-500">No appointments found</div>
+        )}
+
+        {!loading.fetch && !error && appointmentByUser.length > 0 && (
           <AppointmentTable
-            appointments={appointments}
-            loading={{ fetch: false, updateId: "" }}
+            appointments={appointmentByUser}
+            loading={loading}
             updateStatus={() => {}}
             formatDateTime={formatDateTime}
             showActions={false}
