@@ -7,6 +7,16 @@ interface TimeSelectorProps {
   setSelectedTime: (time: string) => void;
 }
 
+interface Appointment {
+  date: string;
+  hour: string;
+  status: "confirmed" | "waiting for confirmation" | string;
+}
+
+interface ApiResponse {
+  appointments: Appointment[];
+}
+
 const TimeSelector = ({
   selectedDate,
   selectedTime,
@@ -16,26 +26,26 @@ const TimeSelector = ({
   const [occupiedTimes, setOccupiedTimes] = useState<string[]>([]);
 
   useEffect(() => {
-  const fetchOccupiedTimes = async () => {
-    try {
-      const res = await axios.get("http://localhost:3000/all-appointments");
-      const selectedDateStr = selectedDate.toISOString().split("T")[0];
+    const fetchOccupiedTimes = async () => {
+      try {
+        const res = await axios.get<ApiResponse>("http://localhost:3000/all-appointments");
+        const selectedDateStr = selectedDate.toISOString().split("T")[0];
 
-      const filtered = res.data.appointments
-        .filter((a: any) =>
-          a.date.startsWith(selectedDateStr) && (a.status === "confirmed" || a.status === "waiting for confirmation"))
-        .map((a: any) => a.hour);
+        const filtered = res.data.appointments
+          .filter((a: Appointment) =>
+            a.date.startsWith(selectedDateStr) && 
+            (a.status === "confirmed" || a.status === "waiting for confirmation"))
+          .map((a: Appointment) => a.hour);
 
-      setOccupiedTimes(filtered);
-    } catch (err) {
-      console.error("Error fetching occupied times:", err);
-    }
-  };
+        setOccupiedTimes(filtered);
+      } catch (err) {
+        console.error("Error fetching occupied times:", err);
+      }
+    };
 
-  setSelectedTime("");
-  fetchOccupiedTimes();
-}, [selectedDate, setSelectedTime]);
-
+    setSelectedTime("");
+    fetchOccupiedTimes();
+  }, [selectedDate, setSelectedTime]);
 
   const isToday = () => selectedDate.toDateString() === new Date().toDateString();
 
