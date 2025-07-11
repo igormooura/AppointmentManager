@@ -10,7 +10,7 @@ export const createAppointment = async (
   specialty: string,
   date: Date,
   hour: string
-) => {
+): Promise<IAppointment> => {
   const newAppointment = new Appointment({
     name,
     lastName,
