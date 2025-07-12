@@ -1,51 +1,32 @@
 import { CodeModel } from "../model/code";
+import jwt from "jsonwebtoken"
 import { validateCode } from "../utilities/code";
 
 interface LoginResult {
   email: string;
   authenticated: boolean;
   message?: string;
+  token?: string;
 }
 
 export async function loginService(email: string, code: number): Promise<LoginResult | null> {
   try {
-    const codeEntry = await CodeModel.findOne({ email }).sort({ expiresAt: -1 }).exec();
+    
+    const validated = await validateCode(email, code)
 
-    if (!codeEntry) {
-      return {
-        email,
-        authenticated: false,
-        message: "Code not found. Please request a new one.",
-      };
-    }
-
-    const now = new Date();
-
-    const isExpired = now > codeEntry.expiresAt;
-    const isMatch = codeEntry.code === code;
-
-    if (!isMatch) {
-      return {
-        email,
-        authenticated: false,
-        message: "Incorrect code.",
-      };
-    }
-
-    if (isExpired) {
-      return {
-        email,
-        authenticated: false,
-        message: "Code has expired.",
-      };
+    if(!validated){
+       return { email, authenticated: false, message: "expired/invalid code." };
     }
 
     // código foi usado, deletar
     await CodeModel.deleteMany({ email });
 
+    const token = jwt.sign({ email }, process.env.JWT_SECRET!, { expiresIn: "1h" });
+
     return {
       email,
       authenticated: true,
+      token
     };
   } catch (error: unknown) {
     console.error("Error in loginService:", error);
