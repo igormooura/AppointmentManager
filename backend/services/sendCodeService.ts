@@ -4,16 +4,16 @@ import { generateCode } from "../utilities/code";
 
 dotenv.config();
 
+const transporter = nodemailer.createTransport({ //singleton
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASS,
+  },
+});
+
 export async function sendCodeByEmail(email: string): Promise<number> {
   const code = await generateCode(email);
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASS,
-    },
-  });
 
   const mailOptions = {
     from: `"Appointment Auth" <${process.env.GMAIL_USER}>`,
