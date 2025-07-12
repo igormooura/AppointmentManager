@@ -12,18 +12,8 @@ export async function generateCode(email: string): Promise<number> {
 
   const codeDoc: ICode = { email, code, createdAt, expiresAt };
 
-  try {
-    await CodeModel.deleteMany({ email });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Error deleting old codes:", error.message);
-      throw new Error(error.message);
-    } else {
-      throw new Error("Unknown error deleting old codes");
-    }
-  }
-
-  await CodeModel.create(codeDoc);
+    await CodeModel.deleteMany({ email }); 
+    await CodeModel.create(codeDoc);
 
   return code;
 }
