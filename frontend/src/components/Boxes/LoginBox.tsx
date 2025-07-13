@@ -130,9 +130,7 @@ const LoginBox = () => {
               onClick={handleSendCode}
               className="w-full font-bold text-blue-950 underline mt-3"
             >
-
-
-              {loading ? "Sending other code..." : " Resend Code"}
+              {loading ? "Sending other code..." : "Resend Code"}
             </button>
           </>
         )}
