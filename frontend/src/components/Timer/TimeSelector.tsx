@@ -49,19 +49,19 @@ const TimeSelector = ({
 
   const isToday = () => selectedDate.toDateString() === new Date().toDateString();
 
-  const isAtLeastTwoHoursAhead = (time: string, date: Date) => {
+  const isAtLeastOneHourAhead = (time: string, date: Date) => {
     const now = new Date();
     const [hour, minute] = time.split(":").map(Number);
     const selectedTimeDate = new Date(date);
     selectedTimeDate.setHours(hour, minute, 0, 0);
-    return selectedTimeDate.getTime() >= now.getTime() + 2 * 60 * 60 * 1000;
+    return selectedTimeDate.getTime() >= now.getTime() + 1 * 60 * 60 * 1000;
   };
 
   return (
     <div className="mt-4 grid grid-cols-4 gap-2">
       {times.map((time) => {
         const isOccupied = occupiedTimes.includes(time);
-        const blockedByTime = isToday() && !isAtLeastTwoHoursAhead(time, selectedDate);
+        const blockedByTime = isToday() && !isAtLeastOneHourAhead(time, selectedDate);
         const disabled = isOccupied || blockedByTime;
         const isSelected = selectedTime === time;
 
