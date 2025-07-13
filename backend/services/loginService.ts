@@ -1,6 +1,6 @@
 import { CodeModel } from "../model/code";
-import jwt from "jsonwebtoken"
 import { validateCode } from "../utilities/code";
+import { generateToken } from "../utilities/jwt";
 
 interface LoginResult {
   email: string;
@@ -18,13 +18,14 @@ export async function loginService(email: string, code: number): Promise<LoginRe
        return { email, authenticated: false, message: "expired/invalid code." };
     }
 
-    // código foi usado, deletar
+    // code was used, delete it
     await CodeModel.deleteMany({ email });
 
-    const token = jwt.sign({ email }, process.env.JWT_SECRET!, { expiresIn: "1h" });
+    // JWT
+    const token: string = generateToken({ email, mfaCompleted: validated}) 
 
     return {
-      email,
+      email, 
       authenticated: true,
       token
     };
