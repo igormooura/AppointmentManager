@@ -1,45 +1,48 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Appointment } from "@/types/appointment";
-import { AppointmentTable } from "../Tables/AppointmentTable";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { AppointmentTable } from "../Tables/AppointmentTable";
+import { Appointment } from "@/types/appointment";
 
-interface UserBoxProps {
-  email: string;
-}
-
-const UserBox = ({ email }: UserBoxProps) => {
-  const [appointmentByUser, setAppointmentByUser] = useState<Appointment[]>([]);
+const UserBox = () => {
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState({ fetch: false, updateId: "" });
   const [error, setError] = useState("");
 
+  const email = localStorage.getItem("email");
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    const fetchAppointment = async () => {
-      if (!email) return;
+    if (!email || !token) return;
+
+    const fetchAppointments = async () => {
       setLoading((prev) => ({ ...prev, fetch: true }));
-      setError("");
       try {
-        const response = await axios.get<Appointment[]>(`http://localhost:3000/appointment/${email}`);
-        setAppointmentByUser(response.data);
-      } catch (error: unknown) {
-        if(error instanceof Error){ 
-          setError(error.message);
-          console.error("Fetch error:", error.message);
-        }
+        const response = await axios.get<Appointment[]>(
+          `http://localhost:3000/appointment/${email}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setAppointments(response.data);
+      } catch (err: unknown) {
+        if (err instanceof Error) setError(err.message);
+        else setError("Unknown error while fetching appointments.");
       } finally {
         setLoading((prev) => ({ ...prev, fetch: false }));
       }
     };
-    fetchAppointment();
-  }, [email]);
+
+    fetchAppointments();
+  }, [email, token]);
 
   const formatDateTime = (dateStr: string, hourStr: string) => {
     const [hours, minutes] = hourStr.split(":").map(Number);
     const date = new Date(dateStr);
     date.setHours(hours, minutes, 0, 0);
     return {
-      date: date.toLocaleDateString("en-US"),
-      time: date.toLocaleTimeString("en-US", {
+      date: date.toLocaleDateString("pt-BR"),
+      time: date.toLocaleTimeString("pt-BR", {
         hour: "2-digit",
         minute: "2-digit",
       }),
@@ -47,34 +50,35 @@ const UserBox = ({ email }: UserBoxProps) => {
   };
 
   return (
-    <div className="mx-auto flex justify-center items-start min-h-screen py-8">
+    <div className="min-h-screen flex justify-center items-start py-10">
       <motion.div
-        className="w-full max-w-6xl bg-white shadow-xl rounded-2xl p-6"
+        className="w-full max-w-6xl bg-white shadow-lg rounded-xl p-6"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.3 }}
       >
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Your Appointments
-        </h2>
+        <div className="flex justify-between mb-6">
+          <h2 className="text-2xl font-bold">Your Appointments</h2>
+          <button
+            onClick={() => {
+              localStorage.clear();
+              window.location.href = "/";
+            }}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Logout
+          </button>
+        </div>
 
-        {loading.fetch && <div className="text-center text-gray-500">Loading...</div>}
+        {error && <p className="text-red-600 mb-4">{error}</p>}
 
-        {error && <div className="text-center text-red-500">{error}</div>}
-
-        {!loading.fetch && !error && appointmentByUser.length === 0 && (
-          <div className="text-center p-8 text-gray-500">No appointments found</div>
-        )}
-
-        {!loading.fetch && !error && appointmentByUser.length > 0 && (
-          <AppointmentTable
-            appointments={appointmentByUser}
-            loading={loading}
-            updateStatus={() => {}}
-            formatDateTime={formatDateTime}
-            showActions={false}
-          />
-        )}
+        <AppointmentTable
+          appointments={appointments}
+          loading={loading}
+          updateStatus={() => {}}
+          formatDateTime={formatDateTime}
+          showActions={false}
+        />
       </motion.div>
     </div>
   );
