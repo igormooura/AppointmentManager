@@ -7,6 +7,7 @@ import { connectToRabbitMQ } from './config/rabbitmq';
 import router from './routes/routes';
 import { startRabbitMQReceiver } from './config/receiver';
 import { initSocket } from './config/socket';
+import authRouter from './routes/authroutes';
 
 configDotenv();
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use(router)
+app.use("/auth", authRouter);
 
 async function startServer() {
   try {
