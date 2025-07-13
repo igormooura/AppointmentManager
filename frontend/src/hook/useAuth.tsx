@@ -1,44 +1,62 @@
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-interface User {
+interface UserInfo {
   email: string;
-  token: string;
 }
 
-const useAuth = () => {
-  const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+function useAuth() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const login = async (email: string, code: string) => {
-    setLoading(true);
-    setError("");
-    try {
-      const { data } = await axios.post("http://localhost:3000/login", { email, code });
-      if (data.authenticated && data.token) {
-        const newUser = { email, token: data.token };
-        setUser(newUser);
-        localStorage.setItem("user", JSON.stringify(newUser));
-      } else {
-        setError("Invalid code");
+  const logout = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    setIsAuthenticated(false);
+    setUserInfo(null);
+    navigate("/");
+  }, [navigate]);
+
+  useEffect(() => {
+    const verifyAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        logout();
+        return;
       }
-    } catch (error) {
-      setError("Login failed" + error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-  };
+      try {
+        setLoading(true);
+        const response = await axios.get("http://localhost:3000/auth/verify-auth", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-  return { user, login, logout, loading, error };
-};
+        if (response.data.authenticated) {
+          setIsAuthenticated(true);
+          setUserInfo(response.data.user);
+        } else {
+          logout();
+        }
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data?.message || "Authentication failed");
+        } else {
+          setError("An unexpected error occurred");
+        }
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyAuth();
+  }, [logout]);
+
+  return { isAuthenticated, userInfo, loading, error, logout };
+}
 
 export default useAuth;
