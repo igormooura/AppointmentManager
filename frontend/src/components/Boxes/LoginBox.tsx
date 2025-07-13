@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Input from "../Inputs/Input";
 
 const LoginBox = () => {
@@ -9,102 +9,113 @@ const LoginBox = () => {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
   const handleSendCode = async () => {
-    setError("");
-    if (!email) return setError("Please enter your e-mail.");
+    if (!email) throw new Error("E-mail is needed");
+
     try {
       setLoading(true);
-      await axios.post("http://localhost:3000/sendcode", { email });
+      await axios.post("http://localhost:3000/sendcode", {
+        email: email,
+      });
       setStep("code");
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to request code.");
+    } catch (error: unknown) {
+      if (error instanceof Error) throw new Error(error.message);
+      else console.error("Failed to request the code");
     } finally {
       setLoading(false);
     }
   };
 
   const handleLogin = async () => {
-    setError("");
-    if (!code) return setError("Please enter the code.");
+    if (!code) throw new Error("2FA code is needed");
+
     try {
       setLoading(true);
-      const { data } = await axios.post("http://localhost:3000/login", { email, code });
-      if (data?.authenticated) {
+
+      const { data } = await axios.post("http://localhost:3000/login", {
+        email: email,
+        code: code,
+      });
+
+      if (data.authenticated && data.token) {
+        // If the backend confirms the user is authenticated and returns a valid JWT token...
+        localStorage.setItem("token", data.token);
+        // Store the authentication token in localStorage to keep the user logged in.
+        // This token can be used for future requests to protected routes.
+        localStorage.setItem("email", email);
+        // Store the user's email in localStorage in case it's needed later in the frontend.
+        
         navigate("/user");
+
       } else {
-        setError("Invalid code.");
+        throw new Error("Invalid Code");
       }
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Login failed.");
+    } catch (error: unknown) {
+      if (error instanceof Error) throw new Error(error.message);
+      else console.error("Login Failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen flex justify-center items-center">
+    <div className="flex justify-center items-center min-h-screen">
       <motion.div
-        className="relative w-full max-w-lg bg-white shadow-xl rounded-2xl p-8 flex flex-col gap-4 z-10"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        className="w-full max-w-md bg-white p-8 rounded-3xl shadow-lg"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
       >
-        {step === "email" && (
+        {step === "email" ? (
           <>
-            <h2 className="text-2xl font-semibold text-center mb-2">
-              Enter your e-mail
+            <h2 className=" text-xl font-semibold mb-4 text-center">
+              {" "}
+              Enter your email
             </h2>
             <Input
-              placeholder="Email"
               type="email"
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <button
-              className="btn-primary mt-4"
-              disabled={loading}
               onClick={handleSendCode}
+              disabled={loading}
+              className=" w-full bg-blue-700 text-white py-2 rounded mt-3"
             >
-              {loading ? "Sending..." : "Send code"}
+              {loading ? "Sending..." : "Send Code"}
             </button>
           </>
-        )}
-
-        {step === "code" && (
+        ) : (
           <>
-            <h2 className="text-2xl font-semibold text-center mb-2">
+            <h2 className=" text-xl font-semibold mb-4 text-center">
+              {" "}
               Enter the code sent to {email}
             </h2>
             <Input
-              placeholder="6-digit code"
               type="text"
+              placeholder="6-digit code"
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-      
+              onChange={(e) => setCode(e.target.value)}
             />
             <button
-              className="btn-primary mt-4"
-              disabled={loading}
               onClick={handleLogin}
-            >
-              {loading ? "Verifying..." : "Login"}
-            </button>
-            <button
-              className="text-sm text-blue-500 underline mt-2"
               disabled={loading}
+              className=" w-full bg-green-700 text-white py-2 rounded mt-3 "
+            >
+              {loading ? "Verifying..." : " Login "}
+            </button>
+
+            <button
               onClick={handleSendCode}
+              className="w-full font-bold text-blue-950 undeline mt-3"
             >
               Resend code
             </button>
           </>
-        )}
-
-        {error && (
-          <p className="text-center text-red-600 mt-2">{error}</p>
         )}
       </motion.div>
     </div>
