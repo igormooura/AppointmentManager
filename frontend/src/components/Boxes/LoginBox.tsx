@@ -81,7 +81,7 @@ const LoginBox = () => {
         {step === "email" ? (
           <>
             <h2 className="text-xl font-semibold mb-4 text-center">
-              Enter your email
+              Enter your email that you registered your appointment
             </h2>
             <Input
               type="email"
