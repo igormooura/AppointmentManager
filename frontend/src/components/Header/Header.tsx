@@ -9,21 +9,31 @@ const Header = () => {
     setNav(!nav);
   };
 
+  const linkClass = "hover:underline transition-all duration-200";
+
   return (
     <div className="flex justify-between items-center h-24 mx-auto px-4 bg-[#FAF9F6]">
       <h1 className="w-full text-3xl font-bold text-black">
-        <Link to="/">Appointment Manager</Link>
+        <Link to="/" className={linkClass}>
+          Appointment Manager
+        </Link>
       </h1>
 
       <ul className="hidden md:flex">
         <li className="p-4">
-          <Link to="/">Home</Link>
+          <Link to="/" className={linkClass}>
+            Home
+          </Link>
         </li>
         <li className="p-4">
-          <Link to="/login">Appointments</Link>
+          <Link to="/login" className={linkClass}>
+            Appointments
+          </Link>
         </li>
         <li className="p-4">
-          <Link to="/about">About</Link>
+          <Link to="/about" className={linkClass}>
+            About
+          </Link>
         </li>
       </ul>
 
@@ -39,13 +49,19 @@ const Header = () => {
         }
       >
         <li className="p-4 border-b border-gray-600">
-          <Link to="/" onClick={handleClick}>Home</Link>
-        </li>
-        <li className="p-4">
-          <Link to="/login">Appointments</Link>
+          <Link to="/" onClick={handleClick} className={linkClass}>
+            Home
+          </Link>
         </li>
         <li className="p-4 border-b border-gray-600">
-          <Link to="/about" onClick={handleClick}>About</Link>
+          <Link to="/login" onClick={handleClick} className={linkClass}>
+            Appointments
+          </Link>
+        </li>
+        <li className="p-4 border-b border-gray-600">
+          <Link to="/about" onClick={handleClick} className={linkClass}>
+            About
+          </Link>
         </li>
       </ul>
     </div>
