@@ -3,11 +3,11 @@ import { useState, useEffect, useCallback } from "react";
 import socket from "../../hook/socket";
 import Input from "../Inputs/Input";
 import Calendar from "../Calendar/Calendar";
-import Schedule from "../Buttons/Schedule";
 import TimeSelector from "../Timer/TimeSelector";
 import Notification from "../Notification/Notification";
 import { NotificationType } from "@/types/appointment";
 import { Divisor } from "../Divisor/Divisor";
+import Schedule from "../Buttons/Schedule";
 
 const AppointmentBox = () => {
   const [name, setName] = useState("");
@@ -17,6 +17,15 @@ const AppointmentBox = () => {
   const [email, setEmail] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
+
+  const [errors, setErrors] = useState({
+    name: "",
+    lastName: "",
+    email: "",
+    specialty: "",
+    date: "",
+    time: "",
+  });
 
   useEffect(() => {
     if (email) {
@@ -68,6 +77,21 @@ const AppointmentBox = () => {
     { value: "orthopedics", label: "Orthopedics" },
   ];
 
+  const validate = () => {
+    const newErrors = {
+      name: name.trim() ? "" : "Please enter your first name.",
+      lastName: lastName.trim() ? "" : "Please enter your last name.",
+      email: /^\S+@\S+\.\S+$/.test(email) ? "" : "Please enter a valid email.",
+      specialty: specialty ? "" : "Please select a specialty.",
+      date: selectedDate ? "" : "Please choose a date.",
+      time: selectedTime ? "" : "Please select a time.",
+    };
+
+    setErrors(newErrors);
+
+    return Object.values(newErrors).every((error) => error === "");
+  };
+
   return (
     <div className="relative min-h-screen flex justify-center items-center">
       <div className="fixed bottom-4 right-4 z-50 space-y-2">
@@ -96,18 +120,27 @@ const AppointmentBox = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
+              {errors.name && (
+                <p className="text-red-600 text-sm">{errors.name}</p>
+              )}
               <Input
                 placeholder="Last Name"
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
               />
+              {errors.lastName && (
+                <p className="text-red-600 text-sm">{errors.lastName}</p>
+              )}
               <Input
                 placeholder="Email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              {errors.email && (
+                <p className="text-red-600 text-sm">{errors.email}</p>
+              )}
               <Input
                 type="select"
                 value={specialty}
@@ -115,6 +148,9 @@ const AppointmentBox = () => {
                 placeholder="Select a specialty"
                 options={specialtyOptions}
               />
+              {errors.specialty && (
+                <p className="text-red-600 text-sm">{errors.specialty}</p>
+              )}
             </div>
           </div>
 
@@ -125,12 +161,18 @@ const AppointmentBox = () => {
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
             />
+           
             <TimeSelector
               selectedDate={selectedDate}
               selectedTime={selectedTime}
               setSelectedTime={setSelectedTime}
             />
+            {errors.time && (
+            <p className="text-red-600 text-sm mt-2">{errors.time}</p>
+          )}
           </div>
+          
+          
         </div>
 
         <Schedule
@@ -140,6 +182,7 @@ const AppointmentBox = () => {
           specialty={specialty}
           selectedDate={selectedDate}
           selectedTime={selectedTime}
+          validate={validate}
         />
       </motion.div>
     </div>

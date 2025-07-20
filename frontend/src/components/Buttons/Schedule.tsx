@@ -7,6 +7,7 @@ interface ScheduleProps {
   specialty: string;
   selectedDate: Date;
   selectedTime: string;
+  validate: () => boolean;
 }
 
 const Schedule = ({
@@ -16,19 +17,22 @@ const Schedule = ({
   specialty,
   selectedDate,
   selectedTime,
+  validate,
 }: ScheduleProps) => {
   const handleSchedule = async () => {
-    const fullDateTime = `${
-      selectedDate.toISOString().split("T")[0]
-    }T${selectedTime}:00`;
+    if (!validate()) {
+      return;
+    }
+
+    const fullDateTime = `${selectedDate.toISOString().split("T")[0]}T${selectedTime}:00`;
 
     const appointmentData = {
       name,
       lastName,
       email,
       specialty,
-      date: new Date(fullDateTime), 
-      hour: selectedTime
+      date: new Date(fullDateTime),
+      hour: selectedTime,
     };
 
     try {
