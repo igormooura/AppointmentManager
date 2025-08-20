@@ -20,8 +20,14 @@ const LoginBox = () => {
     try {
       setLoading(true);
 
-      await axios.post("http://localhost:3000/sendcode", { email });
+      if(email.trim() === "admin"){
+        // JUST FOR DEMONSTRATION: here we mock the token.
+        // In a real app, you should implement a secure authentication layer.
 
+        navigate("/admin");
+      } else{  
+        await axios.post("http://localhost:3000/sendcode", { email });
+      }
       setStep("code");
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
