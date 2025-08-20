@@ -1,4 +1,4 @@
-import { CodeModel } from "../model/code";
+import { CodeModel } from "../model/Code";
 import { validateCode } from "../utilities/code";
 import { generateToken } from "../utilities/jwt";
 

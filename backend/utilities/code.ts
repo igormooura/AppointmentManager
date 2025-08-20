@@ -1,6 +1,7 @@
 import { randomInt } from "crypto";
 import { ICode } from "../interfaces/interface";
-import { CodeModel } from "../model/code";
+import { CodeModel } from "../model/Code";
+
 
 const FIVE_MINUTES = 1000 * 60 * 5;
 
