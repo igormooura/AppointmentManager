@@ -5,7 +5,7 @@ let channel: Channel;
 export const connectToRabbitMQ = async (): Promise<void> => {
   
   try {
-    const connect = await amqp.connect("amqp://localhost");
+    const connect = await amqp.connect(process.env.RABBITMQ_URL!);
     channel = await connect.createChannel();
     await channel.assertQueue("appointment.created");
     await channel.assertQueue("appointment.status.updated");
