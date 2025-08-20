@@ -16,12 +16,24 @@ const LoginBox = () => {
   const handleSendCode = async () => {
     setError("");
     if (!email) return setError("Please enter your e-mail.");
+
     try {
       setLoading(true);
+
       await axios.post("http://localhost:3000/sendcode", { email });
+
       setStep("code");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to request code.");
+      if (axios.isAxiosError(err)) {
+        const message =
+          err.response?.data?.message ||
+          `Server error: ${err.response?.statusText || "Unknown error"}`;
+        setError(message);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
@@ -30,10 +42,19 @@ const LoginBox = () => {
   const handleLogin = async () => {
     setError("");
     if (!code) return setError("Please enter the code.");
+
     try {
       setLoading(true);
-      const { data } = await axios.post("http://localhost:3000/login", { email, code });
-      if (data?.authenticated) {
+
+      const { data } = await axios.post("http://localhost:3000/login", {
+        email,
+        code,
+      });
+
+      if (data?.authenticated && data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userEmail", email);
+
         navigate("/user");
       } else {
         setError("Invalid code.");
@@ -84,7 +105,6 @@ const LoginBox = () => {
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-      
             />
             <button
               className="btn-primary mt-4"
@@ -103,9 +123,7 @@ const LoginBox = () => {
           </>
         )}
 
-        {error && (
-          <p className="text-center text-red-600 mt-2">{error}</p>
-        )}
+        {error && <p className="text-center text-red-600 mt-2">{error}</p>}
       </motion.div>
     </div>
   );
