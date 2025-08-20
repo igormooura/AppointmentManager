@@ -15,21 +15,29 @@ const UserBox = ({ email }: UserBoxProps) => {
 
   useEffect(() => {
     const fetchAppointment = async () => {
-      if (!email) return;
-      setLoading((prev) => ({ ...prev, fetch: true }));
-      setError("");
-      try {
-        const response = await axios.get<Appointment[]>(`http://localhost:3000/appointment/${email}`);
-        setAppointmentByUser(response.data);
-      } catch (error: unknown) {
-        if(error instanceof Error){ 
-          setError(error.message);
-          console.error("Fetch error:", error.message);
+    if (!email) return;
+
+    const token = localStorage.getItem("token");
+
+    setLoading((prev) => ({ ...prev, fetch: true }));
+    setError("");
+
+    try {
+      const response = await axios.get<Appointment[]>(
+        `http://localhost:3000/appointment/${email}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      } finally {
-        setLoading((prev) => ({ ...prev, fetch: false }));
-      }
-    };
+      );
+      setAppointmentByUser(response.data);
+    } catch (error: unknown) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading((prev) => ({ ...prev, fetch: false }));
+    }
+  };
     fetchAppointment();
   }, [email]);
 
