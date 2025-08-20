@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TfiClose, TfiAlignLeft } from "react-icons/tfi";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [nav, setNav] = useState(false);
@@ -14,9 +15,12 @@ const Header = () => {
         Appointment Manager
       </h1>
       <ul className="hidden md:flex">
-        <li className="p-4">Home</li>
-        <li className="p-4">Contact Us</li>
-        <li className="p-4">About</li>
+        <li className="p-4">
+          <Link to="/">Home</Link>
+        </li>
+        <li className="p-4">
+          <Link to="/login">Login</Link>
+        </li>
       </ul>
 
       <div onClick={handleClick} className="block md:hidden cursor-pointer">
@@ -30,9 +34,12 @@ const Header = () => {
             : "fixed left-[-100%] ease-in-out duration-500 md:hidden"
         }
       >
-        <li className="p-4 border-b border-gray-600">Home</li>
-        <li className="p-4 border-b border-gray-600">Contact Us</li>
-        <li className="p-4 border-b border-gray-600">About</li>
+        <li className="p-4 border-b border-gray-600">
+          <Link to="/" onClick={handleClick}>Home</Link>
+        </li>
+        <li className="p-4 border-b border-gray-600">
+          <Link to="/about" onClick={handleClick}>About</Link>
+        </li>
       </ul>
     </div>
   );
